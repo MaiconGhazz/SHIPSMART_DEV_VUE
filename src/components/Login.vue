@@ -1,9 +1,15 @@
+<script>
+import AlertBox from '../components/Alerts/Error.vue';
+</script>
+
 <template>
   <card>
     <h1>Login</h1>
     <form>
       <input name="email" id="email" v-model="email" type="text" placeholder="E-mail" />
       <input name="password" id="password" v-model="password" type="password" placeholder="Password" />
+      <AlertBox id="alert">
+      </AlertBox>  
       <button @click="login" type="button">Login</button>
     </form>
   </card>
@@ -22,13 +28,18 @@ function login() {
         window.location.href = '/home';
       }
     }).catch((error) => {
-      console.log(error);
+      document.getElementById('alert').style.display = 'block';
+      document.getElementById('alert').innerHTML  = error.response.data.message;
     });
 }
 
 </script>
 
 <style scoped>
+#alert{
+  display: none;
+}
+
 h1 {
   font-size: 2rem;
   margin-bottom: 1rem;

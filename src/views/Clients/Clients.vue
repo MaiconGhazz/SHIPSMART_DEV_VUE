@@ -1,10 +1,10 @@
 <script setup>
-import Contact from '../components/Add.vue';
+import Clients from '../../components/Clients/Clients.vue';
 </script>
 
 <template>
   <main>
-    <Contact />
+    <Clients />
   </main>
 </template>
 

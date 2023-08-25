@@ -2,36 +2,37 @@
   <card>
     <h1>Cadastrar Contato</h1>
     <form>
-      <input name="name" id="name" v-model="name" type="text" placeholder="Nome de Contato" />
-      <input name="email" id="email" v-model="email" type="text" placeholder="E-mail de Contato" />
-      <input name="tel" id="tel" v-model="tel" type="text" placeholder="Telefone de Contato" />
-      <input @keyup="Search" name="cep" id="cep" v-model="cep" type="text" placeholder="CEP" />
-      <input name="city" id="city" v-model="city" type="text" placeholder="Cidade" />
-      <input name="district" id="district" v-model="district" type="text" placeholder="Bairro" />
-      <input name="end" id="end" v-model="end" type="text" placeholder="Endereço" />
-      <input name="state" id="state" v-model="state" type="text" placeholder="Estado" />
-
-      <button @click="update" type="button">Cadastra</button>
+      <input @keyup="Search" id="cep" v-model="cep" type="text" placeholder="CEP" />
+      <input id="city" v-model="city" type="text" placeholder="Cidade" />
+      <input id="district" v-model="district" type="text" placeholder="Bairro" />
+      <input id="address" v-model="address" type="text" placeholder="Endereço" />
+      <input id="state" v-model="state" type="text" placeholder="Estado" />
+      <select v-model="type" style="width: 100%;height: 35px;border-radius: 5px;">
+        <option disabled value="">Selecione</option>
+        <option value="residence">Residencial</option>
+        <option value="work">Trabalho</option>
+        <option value="charge">Pagamento</option>
+      </select>
+      
+      <button @click="update" style="margin-top: 20px;" type="button">Cadastra</button>
     </form>
   </card>
 </template>
 
 <script>
 import axios from 'axios';
-import api from '../services/api.ts';
+import api from '../../services/api.ts';
 
 export default {
   name: 'Update',
   data() {
     return {
-      name: '',
-      email: '',
-      tel: '',
       cep: '',
       city: '',
       district: '',
-      end: '',
+      address: '',
       state: '',
+      type: '',
     }
   },
   mounted() {
@@ -40,20 +41,18 @@ export default {
       'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
     }
     this.$nextTick(function () {
-      api.get('/contact/' + this.$route.params.id, {
+      api.get('/address/get/' + this.$route.params.id, {
           headers: headers
         })
         .then((response) => {
           console.log(response);
           if(response.data) {
-            this.name = response.data.contact.name;
-            this.email = response.data.contact.email;
-            this.tel = response.data.contact.tel;
-            this.cep = response.data.contact.cep;
-            this.city = response.data.contact.city;
-            this.district = response.data.contact.district;
-            this.end = response.data.contact.end;
-            this.state = response.data.contact.state;
+            this.cep = response.data.data.cep;
+            this.city = response.data.data.city;
+            this.district = response.data.data.district;
+            this.address = response.data.data.address;
+            this.state = response.data.data.state;
+            this.type = response.data.data.type;
           }
         }).catch((error) => {
           console.log(error)
@@ -66,12 +65,12 @@ export default {
         'Accept': 'application/json',
         'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('token'))
       }
-
-      api.post('contact/update/' + this.$route.params.id , this.$data, {
+            
+      api.post('address/update/' + this.$route.params.id , this.$data, {
         headers: headers
       }).then((response) => {
         if (response.data) {
-          window.location.href = '/home';
+          window.location.href = '/clients';
         }
       }).catch((error) => {
         console.log(error);
@@ -81,12 +80,11 @@ export default {
       let url = 'https://cep.awesomeapi.com.br/json/' + document.getElementById('cep').value;
       axios.get(url).then((response) => {
         if (response.data) {
-          document.getElementById('city').value = response.data.city;
-          document.getElementById('district').value = response.data.district;
-          document.getElementById('end').value = response.data.address;
-          document.getElementById('state').value = response.data.state;
+          this.city = response.data.city;
+          this.district = response.data.district;
+          this.address = response.data.address;
+          this.state = response.data.state;
         }
-        console.log(response);
       }).catch((error) => {
         console.log(error);
       });
